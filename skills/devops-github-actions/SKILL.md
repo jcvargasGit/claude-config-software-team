@@ -1,5 +1,5 @@
 ---
-name: github-actions
+name: devops-github-actions
 description: Apply GitHub Actions best practices for CI/CD pipelines, workflows, and automation.
 ---
 

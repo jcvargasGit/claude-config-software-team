@@ -1,5 +1,5 @@
 ---
-name: react
+name: frontend-react
 description: Apply React best practices, component patterns, and hooks when writing or reviewing React code.
 ---
 

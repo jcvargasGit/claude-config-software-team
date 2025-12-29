@@ -1,5 +1,5 @@
 ---
-name: javascript
+name: lang-javascript
 description: Apply JavaScript best practices, modern ES6+ patterns, and clean code when writing or reviewing JavaScript code.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: terraform
+name: devops-terraform
 description: Apply Terraform best practices, module design, and IaC patterns when writing or reviewing infrastructure code.
 ---
 

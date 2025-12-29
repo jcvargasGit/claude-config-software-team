@@ -1,5 +1,5 @@
 ---
-name: golang
+name: lang-golang
 description: Apply Go best practices, idiomatic patterns, and language-specific expertise when writing or reviewing Go code.
 ---
 
@@ -15,8 +15,8 @@ Apply these Go-specific patterns and practices when working with Go code.
 - Keep names short but descriptive (`i` for index, `r` for reader, `ctx` for context)
 - Acronyms should be all caps (`HTTP`, `ID`, `URL`)
 - Unexported names start lowercase, exported start uppercase
-- do not include documentation on the code insted use minigfull naming convention on variables and functions 
-- keep parameters amount max on 2, for more than 2 parameters use structs 
+- do not include documentation on the code insted use minigfull naming convention on variables and functions
+- keep parameters amount max on 2, for more than 2 parameters use structs
 
 ### Error Handling
 ```go

@@ -1,5 +1,5 @@
 ---
-name: typescript
+name: lang-typescript
 description: Apply TypeScript best practices, type patterns, and idiomatic code when writing or reviewing TypeScript code.
 ---
 

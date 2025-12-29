@@ -1,5 +1,5 @@
 ---
-name: html
+name: frontend-html
 description: Apply HTML best practices, semantic markup, and accessibility patterns when writing or reviewing HTML.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: css
+name: frontend-css
 description: Apply CSS best practices, modern layouts, and styling patterns when writing or reviewing stylesheets.
 ---
 
