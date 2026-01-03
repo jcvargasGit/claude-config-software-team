@@ -4,6 +4,7 @@ description: Use this agent for architecture design, system design reviews, and 
 model: sonnet
 skills:
   - arch-cloud
+  - arch-hexagonal
   - spec-acceptance-criteria
   - spec-api-specs
   - cloud-aws

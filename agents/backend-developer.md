@@ -5,6 +5,7 @@ model: sonnet
 skills:
   - clean-code
   - arch-cloud
+  - arch-hexagonal
   - lang-golang
   - lang-python
   - lang-nodejs

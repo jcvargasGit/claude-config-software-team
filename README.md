@@ -26,6 +26,7 @@ Personal Claude Code configuration files for skills, agents, and settings.
 │   ├── spec-prd/
 │   ├── spec-api-specs/
 │   ├── arch-cloud/
+│   ├── arch-hexagonal/
 │   └── clean-code/
 ├── agents/
 │   ├── solution-architect.md
@@ -47,7 +48,7 @@ Skills are organized by category prefix:
 | `cloud-` | Cloud Providers | aws, cloudformation, sam |
 | `devops-` | DevOps | terraform, github-actions |
 | `spec-` | Specifications | user-stories, acceptance-criteria, prd, api-specs |
-| `arch-` | Architecture | cloud |
+| `arch-` | Architecture | cloud, hexagonal |
 | (none) | General | clean-code |
 
 ## Agents
@@ -62,8 +63,8 @@ Skills are organized by category prefix:
 
 | Agent | Skills |
 |-------|--------|
-| `solution-architect` | arch-cloud, spec-acceptance-criteria, spec-api-specs, cloud-aws, clean-code |
-| `backend-developer` | clean-code, arch-cloud, lang-golang, lang-python, lang-nodejs, devops-terraform, devops-github-actions, cloud-cloudformation, cloud-sam |
+| `solution-architect` | arch-cloud, arch-hexagonal, spec-acceptance-criteria, spec-api-specs, cloud-aws, clean-code |
+| `backend-developer` | clean-code, arch-cloud, arch-hexagonal, lang-golang, lang-python, lang-nodejs, devops-terraform, devops-github-actions, cloud-cloudformation, cloud-sam |
 | `frontend-engineer` | clean-code, lang-typescript, lang-javascript, frontend-html, frontend-css, frontend-react, spec-acceptance-criteria |
 
 ## Commands
