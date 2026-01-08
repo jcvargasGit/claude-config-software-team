@@ -1,7 +1,7 @@
 ---
 name: solution-architect
 description: Use this agent for architecture design, system design reviews, and technical decision-making. This agent provides advice and recommendations but does NOT write implementation code. Use for architecture diagrams, trade-off analysis, technology selection, and design patterns.
-model: sonnet
+model: opus
 skills:
   - arch-cloud
   - arch-hexagonal

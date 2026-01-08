@@ -18,8 +18,9 @@ Apply these patterns when writing PRDs.
 6. Requirements
 7. Design & UX
 8. Technical Considerations
-9. Timeline & Milestones
-10. Open Questions
+9. Test Plan
+10. Timeline & Milestones
+11. Open Questions
 ```
 
 ## Sections
@@ -174,7 +175,49 @@ Expected load, caching strategy, rate limiting.
 Key metrics to track, alerts to configure.
 ```
 
-### 9. Timeline
+### 9. Test Plan
+
+Define what should be tested and at which level using **black-box approach** - test through the API with HTTP inputs/outputs.
+
+```markdown
+## Test Plan
+
+### Unit Tests (Mocked - Local)
+Simulate failure scenarios through the handler:
+
+| Scenario | Input | Expected Response |
+|----------|-------|-------------------|
+| Successful operation | POST /endpoint with valid data | 201 + success message |
+| Invalid email format | POST /endpoint with email: "invalid" | 400 + "Invalid email" error |
+| Service unavailable | POST /endpoint (mocked service down) | 503 + "Service unavailable" |
+| Rate limited | POST /endpoint (rate limit exceeded) | 429 + "Too many requests" |
+
+### Integration Tests (Real AWS - Ephemeral)
+Test actual cloud service interactions (happy paths):
+
+| Scenario | What to Verify |
+|----------|----------------|
+| Create resource | Resource created, returns 201 |
+| Read resource | Returns expected data |
+| Update resource | Changes persisted |
+| Error case | Returns proper error response |
+
+Note: IAM permissions are implicit - tests fail with AccessDeniedException if wrong.
+
+### E2E Tests (API Gateway)
+Test critical user journeys from external interface:
+
+| Journey | Steps | Success Criteria |
+|---------|-------|------------------|
+| User registration | POST /register → verify email → login | User can authenticate |
+| Password reset | Request reset → confirm → login with new password | Password changed |
+
+### Test Environment
+- Ephemeral stack per PR: `sam deploy -s feature-xyz`
+- Cleanup after merge
+```
+
+### 10. Timeline
 
 ```markdown
 ## Timeline
@@ -193,7 +236,7 @@ Key metrics to track, alerts to configure.
 | Third-party email delays | Medium | High | Implement retry logic, fallback to SMS |
 ```
 
-### 10. Open Questions
+### 11. Open Questions
 
 ```markdown
 ## Open Questions
@@ -255,6 +298,22 @@ Key metrics to track, alerts to configure.
 
 ## Technical Considerations
 [Architecture notes, API changes, security]
+
+## Test Plan
+### Unit Tests (Mocked)
+| Scenario | Input | Expected Response |
+|----------|-------|-------------------|
+| | | |
+
+### Integration Tests (Real AWS)
+| Scenario | What to Verify |
+|----------|----------------|
+| | |
+
+### E2E Tests
+| Journey | Steps | Success Criteria |
+|---------|-------|------------------|
+| | | |
 
 ## Open Questions
 - [ ] Question 1

@@ -1,6 +1,8 @@
 # Claude Code Configuration
 
-Personal Claude Code configuration files for skills, agents, and settings.
+A collection of reusable Claude Code configuration files including skills, agents, and commands to improve your project creation workflow.
+
+Feel free to use, adapt, and contribute to these configurations!
 
 ## Structure
 
@@ -89,6 +91,14 @@ After running setup, verify the configuration:
 claude /config
 ```
 
+## Contributing
+
+Contributions are welcome! Whether it's new skills, improved agents, bug fixes, or documentation improvements.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute.
+
+Please read our [Code of Conduct](CODE_OF_CONDUCT.md) before participating.
+
 ## License
 
-MIT
+MIT - You are free to use, modify, and distribute this configuration. Attribution is required per the license terms.

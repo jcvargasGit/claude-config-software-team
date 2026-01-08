@@ -1,7 +1,7 @@
 ---
 name: frontend-engineer
 description: Use this agent for frontend implementation tasks. This agent writes UI code, implements features, and creates tests. Supports TypeScript, JavaScript, React, HTML, and CSS.
-model: sonnet
+model: opus
 skills:
   - clean-code
   - lang-typescript

@@ -1,7 +1,7 @@
 ---
 name: backend-developer
 description: Use this agent for backend implementation tasks. This agent writes code, creates infrastructure, and sets up CI/CD. Supports Go, Python, Node.js, Terraform, CloudFormation, and SAM.
-model: sonnet
+model: opus
 skills:
   - clean-code
   - arch-cloud
