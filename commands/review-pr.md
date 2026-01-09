@@ -121,9 +121,18 @@ gh pr comment $PR_NUMBER --body "Review summary..."
 gh pr review $PR_NUMBER --comment --body "..."
 ```
 
-### Step 6: Save Review Summary
+### Step 6: Save Review Summary (User Approval Required)
 
-Save the summary to the project's `.claude/reviews/` directory:
+Ask the user for approval before saving using AskUserQuestion:
+
+```
+Would you like to save this review summary?
+- Yes, save to .claude/reviews/
+- Yes, save to custom location
+- No, don't save
+```
+
+**Only if user approves**, save the summary:
 
 ```bash
 mkdir -p .claude/reviews
@@ -131,7 +140,7 @@ mkdir -p .claude/reviews
 
 Save as `.claude/reviews/PR-[number]-[date].md`
 
-Also ask if user wants to save to a central reviews location.
+**Run the file write operation in the background** using the Task tool with `run_in_background: true` so the user can continue working while the summary is being saved.
 
 ## Agent Selection Logic
 
@@ -175,6 +184,7 @@ ALWAYS:
 
 - Agents run in parallel for faster reviews
 - Only high-confidence issues (≥80) are reported
-- Summary is always saved locally for reference
+- Summary saving requires user approval before writing
+- Summary is saved in the background (non-blocking)
 - PR comments are optional and user-controlled
-- Uses extended thinking for thorough analysis
+- Uses extended thinking (opus model) for thorough analysis
