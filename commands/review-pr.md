@@ -12,7 +12,16 @@ Comprehensive pull request review using intelligent agent selection based on the
 
 ## Instructions
 
-### Step 1: Get PR Information
+### Step 1: Sync with Remote
+
+First, pull the latest changes to ensure we're reviewing up-to-date code:
+
+```bash
+git fetch origin
+git pull origin $(git branch --show-current) --rebase 2>/dev/null || true
+```
+
+### Step 2: Get PR Information
 
 If an argument is provided ("$ARGUMENTS"), use it as the PR number or branch name.
 
@@ -29,7 +38,7 @@ If no argument, check current branch:
 gh pr view
 ```
 
-### Step 2: Analyze the Diff
+### Step 3: Analyze the Diff
 
 Get the PR diff and analyze what types of files changed:
 
@@ -44,7 +53,7 @@ Categorize the changes:
 - **Infrastructure**: `.tf`, `.yaml`, `.yml` (CloudFormation, k8s), `Dockerfile`
 - **Types/Interfaces**: Files with type definitions, interfaces, structs
 
-### Step 3: Select and Run Agents
+### Step 4: Select and Run Agents
 
 Based on the file types detected, run the appropriate agents **in parallel** using the Task tool:
 
@@ -65,7 +74,7 @@ Launch agents in parallel for efficiency:
 Use Task tool with multiple parallel calls for independent agents
 ```
 
-### Step 4: Compile Review Summary
+### Step 5: Compile Review Summary
 
 After all agents complete, compile a summary:
 
@@ -101,7 +110,7 @@ After all agents complete, compile a summary:
 [APPROVE / REQUEST_CHANGES / COMMENT]
 ```
 
-### Step 5: Ask User About PR Comments
+### Step 6: Ask User About PR Comments
 
 Use AskUserQuestion to ask:
 
@@ -121,7 +130,7 @@ gh pr comment $PR_NUMBER --body "Review summary..."
 gh pr review $PR_NUMBER --comment --body "..."
 ```
 
-### Step 6: Save Review Summary (User Approval Required)
+### Step 7: Save Review Summary (User Approval Required)
 
 Ask the user for approval before saving using AskUserQuestion:
 
