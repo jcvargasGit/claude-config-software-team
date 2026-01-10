@@ -77,6 +77,7 @@ description: What the command does
 
 Use semantic format: `type(scope): description`
 
-Types: `feat`, `fix`, `refactor`, `docs`, `chore`, `test`
+General types (for manual git commits): `feat`, `fix`, `refactor`, `docs`, `chore`, `test`
+`/commit` command currently supports: `feat`, `fix`, `test`
 
 Example: `feat(skills): add lang-rust skill for Rust development`
