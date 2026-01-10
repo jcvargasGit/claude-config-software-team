@@ -11,6 +11,7 @@ Generate a commit message following conventional commits and commit the staged c
 
 1. Run `git status` and `git diff --staged` to see what's being committed
 2. Generate a commit message in this format:
+3. The commit message should contain the current branch name
 
 ```
 type(scope): short description
@@ -21,10 +22,10 @@ type(scope): short description
 **Types:**
 - `feat` - new feature
 - `fix` - bug fix
-- `refactor` - code change that neither fixes a bug nor adds a feature
-- `docs` - documentation only
-- `chore` - maintenance, dependencies, config
 - `test` - adding or updating tests
+- `docs` - documentation only changes
+- `chore` - changes to build process, tooling, or other chores
+- `refactor` - code changes that neither fix a bug nor add a feature
 
 **Rules:**
 - Scope is optional, use folder/module name if relevant
@@ -37,9 +38,9 @@ type(scope): short description
 
 **Examples:**
 ```
-feat(skills): add Python and Node.js language skills
-fix(api): handle null response from user service
-refactor(handlers): extract validation logic
-docs: update README with new agent structure
-chore(deps): upgrade aws-sdk to v3
+feat(skills): [branch-name] add Python and Node.js language skills
+fix(api): [branch-name] handle null response from user service
+refactor(handlers): [branch-name] extract validation logic
+docs: [branch-name] update README with new agent structure
+chore(deps): [branch-name] upgrade aws-sdk to v3
 ```
