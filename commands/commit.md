@@ -23,6 +23,9 @@ type(scope): short description
 - `feat` - new feature
 - `fix` - bug fix
 - `test` - adding or updating tests
+- `docs` - documentation only changes
+- `chore` - changes to build process, tooling, or other chores
+- `refactor` - code changes that neither fix a bug nor add a feature
 
 **Rules:**
 - Scope is optional, use folder/module name if relevant
