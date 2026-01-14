@@ -217,6 +217,103 @@ Use descriptive names that read like documentation:
 - `TestRegister_WithExistingEmail_ReturnsUserExistsError`
 - `TestLogin_WhenUserNotVerified_ReturnsNotVerifiedError`
 
+## Test Style by Level
+
+| Level | Style | Pattern | Why |
+|-------|-------|---------|-----|
+| **Unit** | Simple, table-driven | Direct function calls + assertions | Fast, focused, many cases |
+| **Integration** | BDD Given/When/Then | Step contexts + real services | Readable, reusable, matches specs |
+| **E2E** | BDD Given/When/Then | Step contexts + full stack | User journey focused |
+
+### Unit Tests: Keep Simple
+
+Unit tests should be straightforward - no BDD ceremony needed:
+
+```
+TestValidateEmail:
+  - valid email → no error
+  - empty email → ErrEmailRequired
+  - invalid format → ErrInvalidEmail
+```
+
+Use table-driven tests for multiple cases. Mock external dependencies.
+
+### Integration/E2E Tests: Use BDD Pattern
+
+BDD pattern shines for integration and E2E tests because:
+- Tests read like acceptance criteria
+- Step functions are reusable across tests
+- Clear separation of setup, action, and verification
+- Matches the Given/When/Then in user stories
+
+---
+
+## BDD Integration Testing Pattern
+
+### Given/When/Then Step Contexts
+
+Organize integration and E2E tests using BDD-style step contexts for readability and reusability:
+
+```
+tests/integration/
+  steps/
+    given.go    # Test preconditions (setup)
+    when.go     # Actions being tested
+    then.go     # Assertions and verifications
+  setup_test.go # TestMain with shared initialization
+  feature_test.go
+```
+
+### Step Context Responsibilities
+
+| Context | Purpose | Examples |
+|---------|---------|----------|
+| **Given** | Setup preconditions | Create test user, seed data |
+| **When** | Execute action under test | Call API, invoke handler |
+| **Then** | Verify outcomes | Assert status code, check DB state |
+
+### Test Structure Pattern
+
+Each test follows the Given/When/Then structure:
+
+```
+TestFeature_Scenario:
+  // Given - Setup preconditions
+  precondition := given.SomePrecondition(t)
+
+  // When - Execute action
+  result := when.PerformAction(t, precondition)
+
+  // Then - Verify outcomes
+  then.AssertExpectedOutcome(t, result)
+```
+
+### Setup and Teardown
+
+- **Global setup**: Use test framework's main setup (e.g., TestMain in Go, beforeAll in JS)
+- **Per-test cleanup**: Register cleanup functions for test data
+- **Shared resources**: Initialize once, share across tests (database clients, handlers)
+
+### Test Data Cleanup Patterns
+
+1. **Immediate cleanup**: Clean up right after test creates data
+2. **Deferred cleanup**: Register cleanup at creation time, execute at test end
+3. **Bulk cleanup**: Clean all test data after test suite completes
+
+### Benefits of BDD Pattern
+
+- **Readability**: Tests read like specifications
+- **Reusability**: Step functions shared across tests
+- **Maintainability**: Changes isolated to step context files
+- **Debugging**: Clear which phase failed (setup, action, or assertion)
+
+### Language-Specific Implementation
+
+See language-specific skills for implementation details:
+- `lang-golang` - Go testing patterns
+- `lang-typescript` - Jest/Vitest patterns
+- `lang-python` - pytest patterns
+
 ## Quality Checklist
 
 When designing tests for serverless applications:

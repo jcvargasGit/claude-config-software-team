@@ -219,8 +219,18 @@ func main() {
 
 ## Testing
 
+### Test Style by Level
+
+| Level | Style | Go Pattern |
+|-------|-------|------------|
+| **Unit** | Simple, table-driven | `t.Run` + direct assertions |
+| **Integration/E2E** | BDD Given/When/Then | Step context structs |
+
+---
+
+### Unit Tests: Table-Driven (Simple)
+
 ```go
-// Table-driven tests
 func TestAdd(t *testing.T) {
     tests := []struct {
         name     string
@@ -241,18 +251,114 @@ func TestAdd(t *testing.T) {
         })
     }
 }
+```
 
-// Use testify for assertions
+### Testify Assertions
+
+```go
 func TestService(t *testing.T) {
     assert := assert.New(t)
     require := require.New(t)
 
     result, err := service.Process(input)
-    require.NoError(err)
-    assert.Equal(expected, result)
+    require.NoError(err)          // Stops test if error
+    assert.Equal(expected, result) // Continues on failure
+}
+```
+
+### TestMain for Global Setup
+
+```go
+func TestMain(m *testing.M) {
+    // Setup
+    db := setupDatabase()
+
+    code := m.Run()
+
+    // Teardown
+    db.Close()
+    os.Exit(code)
+}
+```
+
+### t.Cleanup for Per-Test Cleanup
+
+```go
+func TestCreateUser(t *testing.T) {
+    user := createTestUser(t)
+    t.Cleanup(func() {
+        deleteTestUser(t, user.ID)
+    })
+
+    // Test logic here
+}
+```
+
+### Build Tags for Integration Tests
+
+```go
+//go:build integration
+
+package integration
+
+// These tests only run with: go test -tags=integration
+```
+
+---
+
+### Integration/E2E Tests: BDD Step Context Pattern
+
+```go
+// steps/given.go
+type GivenContext struct {
+    DB     *Database
+    Client *http.Client
 }
 
-// Mock interfaces with gomock or manual mocks
+func (g *GivenContext) AUserExists(t *testing.T) *User {
+    t.Helper()
+    user := createUser(t, g.DB)
+    t.Cleanup(func() { deleteUser(t, g.DB, user.ID) })
+    return user
+}
+
+// steps/when.go
+type WhenContext struct {
+    Handler http.Handler
+}
+
+func (w *WhenContext) CallAPI(t *testing.T, req *http.Request) *http.Response {
+    t.Helper()
+    rr := httptest.NewRecorder()
+    w.Handler.ServeHTTP(rr, req)
+    return rr.Result()
+}
+
+// steps/then.go
+type ThenContext struct{}
+
+func (th *ThenContext) StatusCodeIs(t *testing.T, resp *http.Response, expected int) {
+    t.Helper()
+    assert.Equal(t, expected, resp.StatusCode)
+}
+
+// feature_test.go
+func TestLogin_Success(t *testing.T) {
+    // Given
+    user := given.AUserExists(t)
+
+    // When
+    resp := when.CallLogin(t, user.Email, user.Password)
+
+    // Then
+    then.StatusCodeIs(t, resp, 200)
+    then.ResponseContainsToken(t, resp)
+}
+```
+
+### Mock Interfaces
+
+```go
 type mockRepository struct {
     items map[string]Item
 }
@@ -351,6 +457,87 @@ func getDB() (*dynamodb.Client, error) {
     })
     return db, initErr
 }
+```
+
+## Observability
+
+### Structured Logging with zerolog
+
+```go
+import "github.com/rs/zerolog"
+
+// Initialize logger with service context
+func NewLogger() zerolog.Logger {
+    return zerolog.New(os.Stdout).
+        With().
+        Timestamp().
+        Str("service", "my-service").
+        Str("stage", os.Getenv("STAGE")).
+        Logger()
+}
+```
+
+### Log Event Chaining
+
+```go
+// Info level for successful operations
+log.Info().
+    Str("method", "POST").
+    Str("path", "/users").
+    Int("status", 200).
+    Dur("duration", time.Since(start)).
+    Msg("request handled")
+
+// Warn level for client errors (4xx)
+log.Warn().
+    Err(err).
+    Str("operation", "login").
+    Int("status", 401).
+    Msg("request failed")
+
+// Error level for server errors (5xx)
+log.Error().
+    Err(err).
+    Str("operation", "createUser").
+    Int("status", 500).
+    Msg("request failed")
+```
+
+### Error Logging Helper Pattern
+
+```go
+func (h *Handler) logError(err error, operation string) Response {
+    status := mapErrorToStatus(err)
+
+    logEvent := h.log.Warn()
+    if status >= 500 {
+        logEvent = h.log.Error()
+    }
+
+    logEvent.
+        Err(err).
+        Str("operation", operation).
+        Int("status", status).
+        Msg("request failed")
+
+    return errorResponse(err)
+}
+
+// Usage in handlers
+if err != nil {
+    return h.logError(err, "register")
+}
+```
+
+### Context-Aware Logging
+
+```go
+// Add request ID to context
+ctx = log.With().Str("requestId", requestID).Logger().WithContext(ctx)
+
+// Retrieve logger from context
+log := zerolog.Ctx(ctx)
+log.Info().Msg("processing request")
 ```
 
 ## Quality Checklist

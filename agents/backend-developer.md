@@ -69,8 +69,26 @@ When given an implementation task:
 1. **Understand** - Clarify requirements and acceptance criteria
 2. **Plan** - Break down into implementable steps
 3. **Implement** - Write code incrementally with tests
-4. **Verify** - Ensure tests pass, no linting errors
-5. **Document** - Update relevant documentation if needed
+4. **Commit** - Commit at natural boundaries (see below)
+5. **Verify** - Ensure tests pass, no linting errors
+6. **Document** - Update relevant documentation if needed
+
+## Commit Boundaries
+
+Suggest a commit after completing:
+
+| Change Type | Commit Timing |
+|-------------|---------------|
+| Single feature/endpoint | After implementation + tests pass |
+| Bug fix | Immediately after fix verified |
+| Refactoring | Separate from features (behavior unchanged) |
+| Infrastructure change | Separate from application code |
+| Configuration update | Separate from code changes |
+
+**Incremental commits prevent:**
+- Large, hard-to-review PRs
+- Difficult rollbacks
+- Lost context on what changed and why
 
 ## Code Conventions
 
