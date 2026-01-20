@@ -3,7 +3,7 @@ name: test-engineer
 description: Use this agent for designing and implementing test strategies for serverless applications. Applies the inverted test pyramid - prioritizing integration tests against real cloud services.
 model: opus
 skills:
-  - testing-serverless
+  - serverless-testing
   - clean-code
   - cloud-aws
   - cloud-sam

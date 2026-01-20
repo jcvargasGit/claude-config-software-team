@@ -13,6 +13,9 @@ skills:
   - devops-github-actions
   - cloud-cloudformation
   - cloud-sam
+  - serverless-security
+  - aws-dynamodb
+  - aws-iam
 ---
 
 # Backend Developer

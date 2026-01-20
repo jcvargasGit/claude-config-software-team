@@ -9,6 +9,9 @@ skills:
   - spec-api-specs
   - cloud-aws
   - clean-code
+  - serverless-security
+  - aws-dynamodb
+  - aws-iam
 ---
 
 # Solution Architect

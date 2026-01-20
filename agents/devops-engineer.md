@@ -8,6 +8,8 @@ skills:
   - cloud-aws
   - cloud-sam
   - cloud-cloudformation
+  - aws-iam
+  - lang-bash
 ---
 
 # DevOps Engineer Agent

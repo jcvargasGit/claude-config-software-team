@@ -1,5 +1,5 @@
 ---
-name: testing-serverless
+name: serverless-testing
 description: Apply serverless testing best practices using the inverted test pyramid - prioritize integration tests against real cloud services.
 ---
 
