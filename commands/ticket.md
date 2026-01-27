@@ -22,48 +22,46 @@ Track progress on Jira tickets with persistent done/pending checklists.
 
 ## Storage Location
 
-**Global storage with per-repository organization:**
+**Primary location (tickets-tracker repo):**
 
 ```
-~/.claude/tickets/<repo-name>/<TICKET-ID>.md
+/Users/jonathandiaz/projects/tickets-tracker/<org>/<TICKET-ID>/ticket.md
 ```
 
-**Symlink in each project:**
+**Organization mapping:**
+
+| Working Directory | Org Folder | Ticket Prefix |
+|-------------------|------------|---------------|
+| `/Users/jonathandiaz/flexera/*` | `flexera/` | CCM-XXXX |
+| `/Users/jonathandiaz/transnetwork/*` | `transnetwork/` | TN-XXXX |
+| `/Users/jonathandiaz/playvox/*` | `playvox/` | PV-XXXX |
+
+**Session logs:**
+
 ```
-<project>/docs/tickets -> ~/.claude/tickets/<repo-name>/
+/Users/jonathandiaz/projects/tickets-tracker/<org>/<TICKET-ID>/sessions/YYYY-MM-DD-summary.md
 ```
 
-### Setup (first time per repository)
+### Organization Detection
 
-When running `/ticket` in a new repository:
+Detect organization from working directory:
 
-1. Detect repository name from git remote or directory name:
-   ```bash
-   # Try git remote first
-   REPO_NAME=$(basename -s .git $(git config --get remote.origin.url) 2>/dev/null)
-   # Fallback to current directory name
-   [ -z "$REPO_NAME" ] && REPO_NAME=$(basename $(pwd))
-   ```
-
-2. Create the global tickets directory:
-   ```bash
-   mkdir -p ~/.claude/tickets/$REPO_NAME
-   ```
-
-3. Create symlink in project's docs folder:
-   ```bash
-   mkdir -p docs
-   ln -sfn ~/.claude/tickets/$REPO_NAME docs/tickets
-   ```
-
-4. Add `docs/tickets` to `.gitignore` if not already present (symlinks shouldn't be committed)
+```bash
+# Detect org from path
+case "$(pwd)" in
+  /Users/jonathandiaz/flexera/*) ORG="flexera" ;;
+  /Users/jonathandiaz/transnetwork/*) ORG="transnetwork" ;;
+  /Users/jonathandiaz/playvox/*) ORG="playvox" ;;
+  *) ORG="flexera" ;;  # Default
+esac
+```
 
 ### Path Resolution
 
 When looking for a ticket:
-1. First, determine `REPO_NAME` from git or directory
-2. Look in `~/.claude/tickets/$REPO_NAME/<TICKET-ID>.md`
-3. The symlink at `docs/tickets` provides convenient local access
+1. Detect organization from current working directory
+2. Look in `/Users/jonathandiaz/projects/tickets-tracker/$ORG/<TICKET-ID>/ticket.md`
+3. Session logs in `/Users/jonathandiaz/projects/tickets-tracker/$ORG/<TICKET-ID>/sessions/`
 
 ## Display Format
 
@@ -128,31 +126,19 @@ Use these text indicators for clarity:
 
 ## Instructions
 
-### First Time Setup (per repository)
-
-Before any ticket operations, ensure the repository is set up:
+### Path Constants
 
 ```bash
-# Detect repo name
-REPO_NAME=$(basename -s .git $(git config --get remote.origin.url) 2>/dev/null)
-[ -z "$REPO_NAME" ] && REPO_NAME=$(basename $(pwd))
-
-# Create global directory
-mkdir -p ~/.claude/tickets/$REPO_NAME
-
-# Create symlink (if not exists)
-mkdir -p docs
-[ ! -L docs/tickets ] && ln -sfn ~/.claude/tickets/$REPO_NAME docs/tickets
-
-# Add to gitignore if needed
-grep -q "^docs/tickets$" .gitignore 2>/dev/null || echo "docs/tickets" >> .gitignore
+TICKETS_REPO="/Users/jonathandiaz/projects/tickets-tracker"
 ```
 
 ### New Ticket
-1. Run setup (above) if not already done
+1. Detect organization from working directory
 2. Ask user for description and checklist items
-3. Create file at `~/.claude/tickets/$REPO_NAME/<TICKET-ID>.md`
-4. Display initial status
+3. Create directory: `$TICKETS_REPO/$ORG/<TICKET-ID>/`
+4. Create file: `$TICKETS_REPO/$ORG/<TICKET-ID>/ticket.md`
+5. Create sessions dir: `$TICKETS_REPO/$ORG/<TICKET-ID>/sessions/`
+6. Display initial status
 
 ### Existing Ticket
 1. Determine `REPO_NAME` and read the ticket file
@@ -169,12 +155,17 @@ grep -q "^docs/tickets$" .gitignore 2>/dev/null || echo "docs/tickets" >> .gitig
 
 1. Use Bash with sed to update files - this is faster and auto-approved:
 ```bash
-# Get repo name first
-REPO_NAME=$(basename -s .git $(git config --get remote.origin.url) 2>/dev/null)
-[ -z "$REPO_NAME" ] && REPO_NAME=$(basename $(pwd))
+TICKETS_REPO="/Users/jonathandiaz/projects/tickets-tracker"
+# Detect org
+case "$(pwd)" in
+  /Users/jonathandiaz/flexera/*) ORG="flexera" ;;
+  /Users/jonathandiaz/transnetwork/*) ORG="transnetwork" ;;
+  /Users/jonathandiaz/playvox/*) ORG="playvox" ;;
+  *) ORG="flexera" ;;
+esac
 
 # Mark item done
-sed -i '' 's/- \[ \] Item text/- [x] Item text (DATE)/' ~/.claude/tickets/$REPO_NAME/TICKET.md
+sed -i '' 's/- \[ \] Item text/- [x] Item text (DATE)/' $TICKETS_REPO/$ORG/TICKET-ID/ticket.md
 ```
 
 2. Do NOT use Edit tool for ticket updates (requires approval, slow)
@@ -184,11 +175,11 @@ sed -i '' 's/- \[ \] Item text/- [x] Item text (DATE)/' ~/.claude/tickets/$REPO_
 
 **Quick update pattern:**
 ```bash
-REPO_NAME=$(basename -s .git $(git config --get remote.origin.url) 2>/dev/null)
-[ -z "$REPO_NAME" ] && REPO_NAME=$(basename $(pwd))
+TICKETS_REPO="/Users/jonathandiaz/projects/tickets-tracker"
+ORG="flexera"  # or detect from pwd
 
 # Add note silently
-echo "- Note text (DATE)" >> ~/.claude/tickets/$REPO_NAME/TICKET.md && echo "Note added"
+echo "- Note text (DATE)" >> $TICKETS_REPO/$ORG/TICKET-ID/ticket.md && echo "Note added"
 ```
 
 ### Progress Calculation
@@ -202,6 +193,91 @@ At the end of status display, include:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🎯 Actions:
+Actions:
    [1] Mark item done    [2] Add item    [3] Add note    [4] Exit
+```
+
+---
+
+## TICKET CONTEXT BANNER (REQUIRED)
+
+When `/ticket` is invoked, show this banner at the START of EVERY response:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  TICKET: <TICKET-ID> | Status: <STATUS>                    │
+│  Blockers: <N> | Progress: <done>/<total> (<percent>%)     │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Rules:**
+1. Show at TOP of every response (before any other content)
+2. Update counts as items complete or blockers resolve
+3. Keeps both user and Claude aware of context
+4. Parse ticket file to get current counts
+
+---
+
+## AUTO-TRACKING MODE (CRITICAL)
+
+When `/ticket` is invoked, enable **auto-tracking** for the rest of the conversation:
+
+### What to Track Automatically
+
+| Event | Action |
+|-------|--------|
+| Checklist item completed | Mark `[x]` in ticket file |
+| Blocker resolved | Update status from BLOCKING to RESOLVED |
+| Key decision made | Add to Session Log |
+| Architecture finding | Add to Architecture section |
+| Code written/modified | Note in Session Log |
+| Open question answered | Update the Blockers table |
+
+### Session Log Format
+
+Append to ticket at end of work session or before context clear:
+
+```markdown
+## Session Log
+
+### Session: YYYY-MM-DD HH:MM
+
+**Completed:**
+- [x] What was done
+
+**Findings:**
+- Discovery 1
+- Discovery 2
+
+**Decisions:**
+- Decision and rationale
+
+**Next Steps:**
+- What to do next
+
+---
+```
+
+### Why Auto-Track?
+
+1. **Context survives reset** - Ticket file preserves all progress
+2. **Resume anywhere** - Next session starts with full context
+3. **Documentation** - Automatic record of work done
+4. **Team visibility** - Others can see progress
+
+### Implementation
+
+Use Bash with sed/echo for fast updates (no approval needed):
+
+```bash
+TICKETS_REPO="/Users/jonathandiaz/projects/tickets-tracker"
+ORG="flexera"  # or detect from pwd
+TICKET_ID="CCM-3474"
+
+# Create session log
+SESSION_FILE="$TICKETS_REPO/$ORG/$TICKET_ID/sessions/$(date '+%Y-%m-%d')-session.md"
+echo "# Session: $(date '+%Y-%m-%d %H:%M')" >> $SESSION_FILE
+
+# Mark item done in ticket
+sed -i '' 's/- \[ \] Item text/- [x] Item text/' $TICKETS_REPO/$ORG/$TICKET_ID/ticket.md
 ```
