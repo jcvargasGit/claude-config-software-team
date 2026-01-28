@@ -222,6 +222,192 @@ function processUser(user: User | null) {
 }
 ```
 
+## Testing
+
+### Test Style by Level
+
+| Level | Style | TypeScript Pattern |
+|-------|-------|-------------------|
+| **Unit** | Simple, describe/it | Direct assertions |
+| **Integration/E2E** | BDD Given/When/Then | Step objects |
+
+---
+
+### Unit Tests: Simple (describe/it)
+
+### Jest/Vitest Setup
+
+```typescript
+// vitest.config.ts
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+  test: {
+    globals: true,
+    environment: 'node',
+    coverage: { reporter: ['text', 'lcov'] }
+  }
+})
+```
+
+### Basic Tests
+
+```typescript
+import { describe, it, expect, beforeAll, afterAll } from 'vitest'
+
+describe('UserService', () => {
+  beforeAll(async () => {
+    // Setup before all tests
+  })
+
+  afterAll(async () => {
+    // Cleanup after all tests
+  })
+
+  it('should create a user', async () => {
+    const result = await createUser({ email: 'test@example.com' })
+    expect(result.ok).toBe(true)
+    if (result.ok) {
+      expect(result.data.email).toBe('test@example.com')
+    }
+  })
+})
+```
+
+---
+
+### Integration/E2E Tests: BDD Step Pattern
+
+```typescript
+// steps/given.ts
+export const given = {
+  aUserExists: async (t: TestContext): Promise<User> => {
+    const user = await createTestUser()
+    t.onTestFinished(() => deleteTestUser(user.id))
+    return user
+  }
+}
+
+// steps/when.ts
+export const when = {
+  callLogin: async (email: string, password: string): Promise<Response> => {
+    return fetch('/api/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    })
+  }
+}
+
+// steps/then.ts
+export const then = {
+  statusCodeIs: (response: Response, expected: number) => {
+    expect(response.status).toBe(expected)
+  },
+  responseContainsToken: async (response: Response) => {
+    const body = await response.json()
+    expect(body.accessToken).toBeDefined()
+  }
+}
+
+// feature.test.ts
+describe('Login', () => {
+  it('should login successfully', async (t) => {
+    // Given
+    const user = await given.aUserExists(t)
+
+    // When
+    const response = await when.callLogin(user.email, 'password')
+
+    // Then
+    then.statusCodeIs(response, 200)
+    await then.responseContainsToken(response)
+  })
+})
+```
+
+### Mocking
+
+```typescript
+import { vi, Mock } from 'vitest'
+
+// Mock a module
+vi.mock('./api', () => ({
+  fetchUser: vi.fn()
+}))
+
+// Type-safe mock
+const mockFetchUser = fetchUser as Mock
+mockFetchUser.mockResolvedValue({ id: '1', email: 'test@example.com' })
+```
+
+## Observability
+
+### Structured Logging with Pino
+
+```typescript
+import pino from 'pino'
+
+const logger = pino({
+  level: process.env.LOG_LEVEL || 'info',
+  base: {
+    service: 'my-service',
+    stage: process.env.STAGE
+  }
+})
+
+// Info level
+logger.info({ method: 'POST', path: '/users', status: 200, duration: 42 }, 'request handled')
+
+// Warn for 4xx
+logger.warn({ err, operation: 'login', status: 401 }, 'request failed')
+
+// Error for 5xx
+logger.error({ err, operation: 'createUser', status: 500 }, 'request failed')
+```
+
+### Error Logging Helper
+
+```typescript
+function logError(err: Error, operation: string): ErrorResponse {
+  const status = mapErrorToStatus(err)
+  const level = status >= 500 ? 'error' : 'warn'
+
+  logger[level]({ err, operation, status }, 'request failed')
+
+  return errorResponse(err)
+}
+
+// Usage
+if (!result.ok) {
+  return logError(result.error, 'register')
+}
+```
+
+### Request Context Middleware
+
+```typescript
+import { AsyncLocalStorage } from 'async_hooks'
+
+interface RequestContext {
+  requestId: string
+  logger: pino.Logger
+}
+
+const storage = new AsyncLocalStorage<RequestContext>()
+
+function requestMiddleware(req: Request, res: Response, next: NextFunction) {
+  const requestId = req.headers['x-request-id'] || crypto.randomUUID()
+  const childLogger = logger.child({ requestId })
+
+  storage.run({ requestId, childLogger }, () => next())
+}
+
+// Get logger in any function
+function getLogger(): pino.Logger {
+  return storage.getStore()?.logger || logger
+}
+```
+
 ## Quality Checklist
 
 When writing TypeScript code, verify:

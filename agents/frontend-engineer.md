@@ -74,8 +74,26 @@ When given a frontend task:
 1. **Understand** - Clarify requirements and edge cases
 2. **Design types** - Define interfaces and contracts first
 3. **Implement** - Build components incrementally
-4. **Test** - Write tests alongside implementation
-5. **Verify** - Check accessibility, responsiveness, performance
+4. **Commit** - Commit at natural boundaries (see below)
+5. **Test** - Write tests alongside implementation
+6. **Verify** - Check accessibility, responsiveness, performance
+
+## Commit Boundaries
+
+Suggest a commit after completing:
+
+| Change Type | Commit Timing |
+|-------------|---------------|
+| New component | After component + tests pass |
+| Feature implementation | After feature is working with tests |
+| Bug fix | Immediately after fix verified |
+| Refactoring | Separate from features (behavior unchanged) |
+| Style/CSS changes | Can group related styling together |
+
+**Incremental commits prevent:**
+- Large, hard-to-review PRs
+- Difficult rollbacks
+- Lost context on what changed and why
 
 ## Code Conventions
 

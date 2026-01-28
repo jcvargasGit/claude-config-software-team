@@ -3,7 +3,7 @@ name: test-engineer
 description: Use this agent for designing and implementing test strategies for serverless applications. Applies the inverted test pyramid - prioritizing integration tests against real cloud services.
 model: opus
 skills:
-  - testing-serverless
+  - serverless-testing
   - clean-code
   - cloud-aws
   - cloud-sam
@@ -82,7 +82,24 @@ When given a testing task:
 2. **Classify** - Determine appropriate test level for each component
 3. **Design** - Define test scenarios (happy path + failure cases)
 4. **Implement** - Write tests starting with unit, then integration
-5. **Verify** - Run tests, check coverage, identify gaps
+5. **Commit** - Commit at natural boundaries (see below)
+6. **Verify** - Run tests, check coverage, identify gaps
+
+## Commit Boundaries
+
+Suggest a commit after completing:
+
+| Change Type | Commit Timing |
+|-------------|---------------|
+| Unit test suite | After tests for one component/module pass |
+| Integration test suite | After tests for one feature pass |
+| Test infrastructure | Separate from test implementation |
+| Test refactoring | Separate from new tests |
+
+**Incremental commits prevent:**
+- Large, hard-to-review PRs
+- Difficult rollbacks
+- Lost context on what changed and why
 
 ## What to Test Where
 

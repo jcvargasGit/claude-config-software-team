@@ -245,6 +245,67 @@ Apply these Clean Code principles based on Robert C. Martin's teachings.
 
 Priority is in order: tests first, then refactor for duplication and expressiveness.
 
+## Git Workflow
+
+### Commit Boundaries
+
+Each commit should represent one logical change:
+
+| Good Commit | Bad Commit |
+|-------------|------------|
+| "feat(auth): add login endpoint" | "add login, fix bug, update tests" |
+| "test(auth): add login integration tests" | "WIP" |
+| "refactor(auth): extract validation logic" | "misc changes" |
+
+### What Goes Together
+
+- **Feature + its tests** = same commit (they're one logical unit)
+- **Refactoring** = separate commit (behavior unchanged)
+- **Bug fix** = separate commit (easy to revert if needed)
+- **Config/infra changes** = separate commit (different concern)
+
+### When to Commit
+
+- After completing a working unit
+- Before switching context to different work
+- After tests pass
+- When you have a coherent, describable change
+
+### Incremental Commits (Default)
+
+Commit as you work, not at the end:
+
+1. Complete a logical unit of work
+2. Run tests to verify
+3. Commit with semantic message
+4. Move to next unit
+
+### Large Change Strategy
+
+If you accumulated many uncommitted changes:
+
+1. **Assess**: Run `git status` to see scope
+2. **Group**: Identify logical groupings:
+   - By feature/directory
+   - By change type (feat, fix, test, refactor)
+   - By dependency order
+3. **Stage selectively**: Use `git add <files>` or `git add -p`
+4. **Commit in order**: Dependencies first, then dependents
+
+### Semantic Commit Messages
+
+Format: `type(scope): description`
+
+| Type | When |
+|------|------|
+| feat | New feature |
+| fix | Bug fix |
+| test | Adding/updating tests |
+| refactor | Code change without behavior change |
+| docs | Documentation only |
+| chore | Build, config, tooling |
+| ci | CI/CD changes |
+
 ## Code Smells
 
 ### Comments
